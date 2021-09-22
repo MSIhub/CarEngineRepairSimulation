@@ -5,52 +5,39 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class SocketHandling : MonoBehaviour
 {
-    private XRSocketInteractor _socket;
+    [SerializeField] private List<XRSocketInteractor> _socketsInObject;
     // Start is called before the first frame update
     void Start()
     {
-        _socket = this.gameObject.GetComponent<XRSocketInteractor>();
-        _socket.selectEntered.AddListener(DisableCollision);
-        _socket.selectExited.AddListener(EnableCollision);
-
-    }
-    
-    private void DisableCollision(SelectEnterEventArgs arg0)
-    {
-        arg0.interactable.gameObject.GetComponent<Collider>().enabled = false;
-    }
-
-    private void EnableCollision(SelectExitEventArgs arg0)
-    {
-        arg0.interactable.gameObject.GetComponent<Collider>().enabled = true;;
-    }
-    
-    
-    /*
-     
-      var rb = arg0.interactable.gameObject.GetComponent<Rigidbody>();
-        ToggleRBKinematic(rb, true);
-    private void ToggleRBKinematic(Rigidbody arg0, bool toggle)
-    {
-        arg0.isKinematic = toggle;
-        var rbArray = this.gameObject.GetComponentsInParent<Rigidbody>();
-        foreach (var rb in rbArray)
+        foreach (var socket in _socketsInObject)
         {
-            rb.isKinematic = toggle;
+            socket.selectEntered.AddListener(SocketAttached);
+            socket.selectExited.AddListener(SocketDettached);
         }
+        
     }
     
-        var colliders = this.gameObject.GetComponentsInParent<Collider>();
-        foreach (var col in colliders)
+    private void SocketAttached(SelectEnterEventArgs arg0)
+    {
+        IgnoreCollision(arg0.interactable, true);
+    }
+
+    private void SocketDettached(SelectExitEventArgs arg0)
+    {
+        IgnoreCollision(arg0.interactable, false);
+    }
+
+
+    private void IgnoreCollision(XRBaseInteractable interactable, bool ignore)
+    {
+        var myColliders = GetComponentsInChildren<Collider>();
+        foreach (var myCollider in myColliders)
         {
-            if (col.gameObject.TryGetComponent<XRGrabInteractable>(out var grabInteractable))
+            Debug.Log(myCollider.name);
+            foreach (var interactableCollider in interactable.colliders)
             {
-                Physics.IgnoreCollision(arg0.interactable.gameObject.GetComponent<Collider>(), col, false);
-            }   
+                Physics.IgnoreCollision(myCollider, interactableCollider, ignore);
+            }
         }
-    */
-
-
-
-    
+    }
 }
