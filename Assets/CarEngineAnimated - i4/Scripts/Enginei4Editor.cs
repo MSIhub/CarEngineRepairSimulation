@@ -26,11 +26,7 @@ public class EngineEditor : Editor {
 			targetScript.ActivateAllObjects ();
 
 		EditorGUILayout.Space ();
-
-		using (new EditorGUILayout.HorizontalScope ()) {
-			if (GUILayout.Button ("Enable transparency")) targetScript.EnableTransparency ();
-			if (GUILayout.Button ("Disable transparency")) targetScript.DisableTransparency ();
-		}
+		
 	}
 
 }

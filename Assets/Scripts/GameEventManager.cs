@@ -9,27 +9,29 @@ namespace DefaultNamespace
     {
         [SerializeField] private List<GameObject> _assembledObjects;
         [SerializeField] private GameObject _animatedEngine;
-        [SerializeField] private float waitTimer = 10.0f;
+        //[SerializeField] private float waitTimer = 10.0f;
         public bool isAssemblyComplete;
         private bool _isObjectDestroyedBeforeAnimation = false;
-        private  float waitTime;
+        //private  float waitTime;
         
 
         private void Awake()
         {
             _animatedEngine.SetActive(false);
-            waitTime = 0.0f;
+            //waitTime = 0.0f;
         }
 
         private void LateUpdate()
         {
             if (!isAssemblyComplete) return;
             
-            while (waitTime < waitTimer)
+            /*
+            if (waitTime < waitTimer)
             {
                 waitTime += Time.deltaTime;
             }
-
+            */
+            
             if (_isObjectDestroyedBeforeAnimation) return;
             foreach (var part in _assembledObjects)
             {

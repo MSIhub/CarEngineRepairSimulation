@@ -11,17 +11,6 @@ public class EngineVariation{
 
 
 [System.Serializable]
-public class Tweaks{
-	public float 
-		TransparencyEnablingTime,
-		TransparencyDisablingTime;
-
-	[Range(0,1)]
-	public float TransparencyValue=0.1f;
-}
-	
-
-[System.Serializable]
 public class Valve{
 	public GameObject 
 		ValveGameobject,
@@ -94,22 +83,17 @@ public class Enginei4 : MonoBehaviour {
 	public EngineElements elements;
 
 	public EngineVariation[] engineVariations;
-
-	public GameObject[] TransparentGameobjects;
+	
 
 	public Material 
 		FadeMaterial, 
 		OpaqueMaterial;
 
 
-	[Header("Contorls")]
-
-	public bool ShowGUI;
+	[Header("Controls")]
 
 	[Range(0,30)]
 	public float RPM;
-
-	public Tweaks tweaks;
 
 	private Vector3 
 		Piston1DefPos,
@@ -167,40 +151,6 @@ public class Enginei4 : MonoBehaviour {
 
 	}
 
-	void OnGUI(){
-		if (!ShowGUI) return;
-
-		GUI.Box(new Rect(Screen.width-207,5,207,380)," ");
-		
-		GUI.Label (new Rect (Screen.width-200, 5, 80, 20), "RPM");
-
-		RPM = GUI.HorizontalSlider (new Rect (Screen.width-170, 10, 160, 20), RPM, 0, 30);
-		
-		if (GUI.Button (new Rect (Screen.width-200, 30, 95, 20), "Tuning 1")) SetVariation (0);
-		if (GUI.Button (new Rect (Screen.width-100, 30, 95, 20), "Tuning 2")) SetVariation (1);
-		if (GUI.Button (new Rect (Screen.width-200, 55, 95, 20), "Tuning 3")) SetVariation (2);
-		if (GUI.Button (new Rect (Screen.width-100, 55, 95, 20), "Tuning 4")) SetVariation (3);
-
-		if (GUI.Button (new Rect (Screen.width-200, 80, 195, 20), "Enable transparency")) EnableTransparency ();
-		if (GUI.Button (new Rect (Screen.width-200, 105, 195, 20), "Disable transparency")) DisableTransparency ();
-		
-		elements.EngineBlock.SetActive(GUI.Toggle (new Rect (Screen.width-200, 130, 200,20), elements.EngineBlock.activeSelf, "Engine block"));
-		elements.CylinderHead.SetActive(GUI.Toggle (new Rect (Screen.width-200, 150, 200, 20), elements.CylinderHead.activeSelf, "Cylinder head"));
-		elements.CylinderHeadCovers.SetActive(GUI.Toggle (new Rect (Screen.width-200, 170, 200, 20), elements.CylinderHeadCovers.activeSelf, "Cylinder head covers"));
-		elements.Gearbox.SetActive(GUI.Toggle (new Rect (Screen.width-200, 190, 200, 20), elements.Gearbox.activeSelf, "Gearbox"));
-		elements.ExhaustManifolds.SetActive(GUI.Toggle (new Rect (Screen.width-200, 210, 200, 20), elements.ExhaustManifolds.activeSelf, "Exhaust manifold"));
-		elements.FuelRail.SetActive(GUI.Toggle (new Rect (Screen.width-200, 230, 200, 20), elements.FuelRail.activeSelf, "Fuel rail"));
-		elements.IntakeManifolds.SetActive(GUI.Toggle (new Rect (Screen.width-200, 250, 200, 20), elements.IntakeManifolds.activeSelf, "Intake manifold"));
-		elements.Flywheel.SetActive(GUI.Toggle (new Rect (Screen.width-200, 270, 200, 20), elements.Flywheel.activeSelf, "Flywheel"));
-		elements.Clutch.SetActive(GUI.Toggle (new Rect (Screen.width-200, 290, 200, 20), elements.Clutch.activeSelf, "Clutch"));
-		elements.OilPan.SetActive(GUI.Toggle (new Rect (Screen.width-200, 310, 200, 20), elements.OilPan.activeSelf, "Oil pan"));
-		elements.SparkPlugWires.SetActive(GUI.Toggle (new Rect (Screen.width-200, 330, 200, 20), elements.SparkPlugWires.activeSelf, "Spark plug wires"));
-		elements.SparkPlugs.SetActive(GUI.Toggle (new Rect (Screen.width-200, 350, 200, 20), elements.SparkPlugs.activeSelf, "Spark plugs"));
-
-		
-	}
-		
-
 	public void SetVariation(int variation){
 		ActivateAllObjects ();
 
@@ -217,79 +167,6 @@ public class Enginei4 : MonoBehaviour {
 		foreach (var mr in transform.GetComponentsInChildren<MeshRenderer>(true))
 			mr.gameObject.SetActive (true);
 	}
-
-
-	public void EnableTransparency(){
-		if (!Application.isPlaying) {
-			Debug.LogWarning ("Transparency works only in playing mode");
-			return;
-		}
-
-		foreach (var go in TransparentGameobjects)
-			StartCoroutine (EnableTransparencyCor (go));
-	}
-
-
-	public void DisableTransparency(){
-		if (!Application.isPlaying) {
-			Debug.LogWarning ("Transparency works only in playing mode");
-			return;
-		}
-
-		foreach (var go in TransparentGameobjects)
-			StartCoroutine (DisableTransparencyCor (go));
-	}
-
-
-	IEnumerator EnableTransparencyCor(GameObject go){
-		Material thisMaterial = go.GetComponent<MeshRenderer> ().material;
-		Material fadeMaterial=(Material)Instantiate(FadeMaterial);
-
-		go.GetComponent<MeshRenderer>().material=fadeMaterial;
-		fadeMaterial.SetTexture ("_MainTex", thisMaterial.GetTexture ("_MainTex"));
-		fadeMaterial.SetTexture ("_OcclusionMap", thisMaterial.GetTexture ("_OcclusionMap"));
-		fadeMaterial.SetTexture ("_BumpMap", thisMaterial.GetTexture ("_BumpMap"));
-
-		fadeMaterial.SetFloat ("_BumpScale", thisMaterial.GetFloat ("_BumpScale"));
-		fadeMaterial.SetFloat ("_Metallic", thisMaterial.GetFloat ("_Metallic"));
-		fadeMaterial.SetFloat ("_OcclusionStrength", thisMaterial.GetFloat ("_OcclusionStrength"));
-		fadeMaterial.SetFloat ("_Glossiness", thisMaterial.GetFloat ("_Glossiness"));
-
-		Color tempColor = fadeMaterial.color;
-
-		for (float f = tweaks.TransparencyEnablingTime; f >= tweaks.TransparencyValue; f -= 0.1f) {
-				tempColor.a = f;
-				fadeMaterial.color = tempColor;
-				yield return null;
-			}
-	}
-
-
-	IEnumerator DisableTransparencyCor(GameObject go){
-		Material tempMaterial = go.GetComponent<MeshRenderer> ().material;
-
-		Color tempColor = tempMaterial.color;
-
-		for (float f = tweaks.TransparencyValue; f <= tweaks.TransparencyDisablingTime; f += 0.1f) {
-			tempColor.a = f;
-			tempMaterial.color = tempColor;
-			yield return null;
-		}
-
-		Material opaqMaterial=(Material)Instantiate(OpaqueMaterial);
-		go.GetComponent<MeshRenderer>().material=opaqMaterial;
-
-		opaqMaterial.SetTexture ("_MainTex", tempMaterial.GetTexture ("_MainTex"));
-		opaqMaterial.SetTexture ("_OcclusionMap", tempMaterial.GetTexture ("_OcclusionMap"));
-		opaqMaterial.SetTexture ("_BumpMap", tempMaterial.GetTexture ("_BumpMap"));
-
-		opaqMaterial.SetFloat ("_BumpScale", tempMaterial.GetFloat ("_BumpScale"));
-		opaqMaterial.SetFloat ("_Metallic", tempMaterial.GetFloat ("_Metallic"));
-		opaqMaterial.SetFloat ("_OcclusionStrength", tempMaterial.GetFloat ("_OcclusionStrength"));
-		opaqMaterial.SetFloat ("_Glossiness", tempMaterial.GetFloat ("_Glossiness"));
-		opaqMaterial.EnableKeyword ("_NORMALMAP");
-	}
-
 	
 	void Update () {
 
