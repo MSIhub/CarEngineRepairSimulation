@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
@@ -137,7 +138,9 @@ public class Enginei4 : MonoBehaviour {
 	private Material 
 		TimingBeltMaterial,
 		GeneratorBeltMaterial;
-		
+
+	[SerializeField] private AudioSource _engineRunningSound;
+
 
 	void Start () {
 		ValveOffset = new Vector3 (0, 0, 0.01f);
@@ -163,7 +166,6 @@ public class Enginei4 : MonoBehaviour {
 			valve.DefPos = valve.ValveGameobject.transform.localPosition;
 
 	}
-
 
 	void OnGUI(){
 		if (!ShowGUI) return;
@@ -368,5 +370,15 @@ public class Enginei4 : MonoBehaviour {
 			valve.ValveGameobject.transform.localPosition = Vector3.Lerp (valve.DefPos, valve.DefPos - ValveOffset, b);
 			valve.SpringGameobject.transform.localScale = Vector3.Lerp (Vector3.one, Vector3.one - ValveSpringOffset, b);
 		}
+	}
+
+	private void OnEnable()
+	{
+		_engineRunningSound.Play();
+	}
+
+	private void OnDisable()
+	{
+		_engineRunningSound.Stop();
 	}
 }

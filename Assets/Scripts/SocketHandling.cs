@@ -10,7 +10,10 @@ public class SocketHandling : MonoBehaviour
     [SerializeField] private List<XRSocketInteractor> _socketsInObject;
     [SerializeField] private int _requiredAssemblyCount = 12;
     [SerializeField] private GameEventManager _gameEventManager;
+    [SerializeField] private AudioSource _snapEffectAudio;
     public int assemblyCount;
+
+    
 
     private void Awake()
     {
@@ -41,6 +44,7 @@ public class SocketHandling : MonoBehaviour
     private void SocketAttached(SelectEnterEventArgs arg0)
     {
         IgnoreCollision(arg0.interactable, true);
+        _snapEffectAudio.Play();
         assemblyCount++;
     }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace DefaultNamespace
 {
@@ -37,6 +38,11 @@ namespace DefaultNamespace
             }
             _isObjectDestroyedBeforeAnimation = true;
             _animatedEngine.SetActive(true);
+        }
+
+        public void RestartScene()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 }
