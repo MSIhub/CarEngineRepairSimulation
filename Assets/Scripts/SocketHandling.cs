@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -8,14 +9,13 @@ public class SocketHandling : MonoBehaviour
 {
     [SerializeField] private List<XRSocketInteractor> _socketsInObject;
     [SerializeField] private int _requiredAssemblyCount = 12;
-    
+    [SerializeField] private GameEventManager _gameEventManager;
     public int assemblyCount;
-    public bool isAssemblySuccess;
 
     private void Awake()
     {
         assemblyCount =0;
-        isAssemblySuccess = false;
+        _gameEventManager.isAssemblyComplete = false;
     }
 
     // Start is called before the first frame update
@@ -31,11 +31,11 @@ public class SocketHandling : MonoBehaviour
 
     private void Update()
     {
-        if (assemblyCount == _requiredAssemblyCount)
-        {
-            isAssemblySuccess = true;
-            /*Debug.Log("Great Job, you are now a VR Certified Engine Mechanic");   */
-        }
+        if (_gameEventManager.isAssemblyComplete) return;
+        if (assemblyCount != _requiredAssemblyCount) return;
+        _gameEventManager.isAssemblyComplete = true;
+        /*Debug.Log("Great Job, you are now a VR Certified Engine Mechanic");   */
+
     }
 
     private void SocketAttached(SelectEnterEventArgs arg0)
